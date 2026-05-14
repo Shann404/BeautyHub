@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Book Appointment</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body>
+
+<h2>Book Appointment</h2>
+
+<form method="POST">
+
+    {% csrf_token %}
+
+    <label>Stylist</label>
+
+    <select name="stylist" id="stylist">
+
+        {% for stylist in stylists %}
+
+            <option value="{{ stylist.id }}">
+                {{ stylist.name }}
+            </option>
+
+        {% endfor %}
+
+    </select>
+
+    <br><br>
+
+    <label>Service</label>
+
+    <select name="service" id="service">
+
+        {% for booking in bookings %}
+
+            <option value="{{ booking.id }}">
+                {{ booking.name }}
+            </option>
+
+        {% endfor %}
+
+    </select>
+
+    <br><br>
+
+    <label>Date</label>
+
+    <input type="date" name="date" id="date">
+
+    <br><br>
+
+    <label>Available Slots</label>
+
+    <select name="time" id="time-slots">
+
+    <option value="">
+        Select Available Time
+    </option>
+
+</select>
+
+    <br><br>
+
+    <button type="submit">
+        Book Appointment
+    </button>
+
+</form>
+
+<script>
+
+function loadSlots() {
+
+    let stylist = $("#stylist").val()
+
+    let service = $("#service").val()
+
+    let date = $("#date").val()
+
+    if (stylist && service && date) {
+
+        $.ajax({
+
+            url: "/get-slots/",
+
+            data: {
+                stylist: stylist,
+                service: service,
+                date: date
+            },
+
+            success: function(response) {
+
+                $("#time-slots").empty()
+
+                response.slots.forEach(function(slot) {
+
+                    $("#time-slots").append(
+                        `<option value="${slot}">
+                            ${slot}
+                        </option>`
+                    )
+
+                })
+
+            }
+
+        })
+
+    }
+
+}
+
+$("#stylist").change(loadSlots)
+
+$("#service").change(loadSlots)
+
+$("#date").change(loadSlots)
+
+</script>
+
+</body>
+</html>

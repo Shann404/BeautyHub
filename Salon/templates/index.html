@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>GlamHive</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+
+ <style>
+
+  .portfolio-card{
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    transition: 0.3s ease;
+    margin-bottom: 30px;
+  }
+
+  .portfolio-card:hover{
+    transform: translateY(-8px);
+  }
+
+  .portfolio-image{
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+  }
+
+  .portfolio-content{
+    padding: 20px;
+  }
+
+  .portfolio-title{
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #222;
+  }
+
+  .portfolio-category{
+    display: inline-block;
+    background: #c59d5f;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .portfolio-empty{
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #777;
+  }
+
+  .inspiration-section{
+    padding: 60px 0;
+  }
+
+  .inspiration-card{
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    margin-bottom: 40px;
+  }
+
+  .inspiration-title{
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #222;
+  }
+
+  .inspiration-subtitle{
+    color: #777;
+    margin-bottom: 30px;
+  }
+
+  .custom-file-input,
+  .custom-textarea{
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 20px;
+    transition: 0.3s;
+  }
+
+  .custom-file-input:focus,
+  .custom-textarea:focus{
+    border-color: #c59d5f;
+    outline: none;
+    box-shadow: 0 0 0 0.15rem rgba(197,157,95,0.25);
+  }
+
+  .custom-textarea{
+    min-height: 140px;
+    resize: none;
+  }
+
+  .upload-btn{
+    background: #c59d5f;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: 0.3s;
+  }
+
+  .upload-btn:hover{
+    background: #a8844f;
+  }
+
+  .preview-card{
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    height: 100%;
+  }
+
+  .preview-header{
+    padding: 18px 20px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .preview-header h4{
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .preview-image{
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+  }
+
+  .preview-empty{
+    padding: 80px 20px;
+    text-align: center;
+    color: #888;
+  }
+
+
+</style>
+</head>
+
+<body class="index-page">
+
+  <header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+
+      <a href="" class="logo d-flex align-items-center">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <!-- <img src="assets/img/logo-2.png" alt=""> -->
+        <h1 class="sitename" style="font-family: 'Edwardian Script ITC';">GlamHive</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="#hero" class="active">Home</a></li>
+          <li><a href="#inspo-corner" class="active">Inspo Corner</a></li>
+          <li><a href="#about">About</a></li>
+          
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section dark-background">
+
+      <img src="{% static 'assets/img/LP9.jpeg' %}" class="hero-bg" alt="" data-aos="fade-in">
+
+      <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
+        <h2 style="font-size: 28; font-family: 'Edwardian Script ITC';">GlamHive</h2>
+        <h2>Welcome to GlamHive Hub</h2>
+        <p>We connect you to services such as <span class="typed" data-typed-items="Hairdressing, Nail & beauty care, Make up & Bridal Services,Spa & Wellness,Barber Extensions,Hair & Wig services"></span></p>
+        <div>
+         <form method="GET" action="{% url 'search' %}" class="">
+              <input 
+              style="border-radius: 50px; padding: 10px; background-color:transparent; border: 1px solid #775409; width:450px; color:white;"
+                type="text" 
+                name="q" 
+                placeholder="Search salons, barbers, services..."
+                required
+              >
+              <button type="submit" style="background-color: #775409; border: 1px solid #775409; padding: 8px 25px;">Search</button>
+            </form>
+        </div>
+      </div>
+
+    </section><!-- /Hero Section -->
+
+     <section class="inspiration-section" id="inspo-corner">
+
+  <div class="container section-title"  data-aos="fade-up">
+        <h2>Inspo Corner</h2>
+      </div><!-- End Section Title -->
+  <div class="container">
+
+    <!-- Upload Form -->
+    <div class="inspiration-card">
+
+      <h2 class="inspiration-title">
+        Upload Your Inspiration
+      </h2>
+
+      <p class="inspiration-subtitle">
+        Share your desired hairstyle, nails, makeup or beauty inspiration.
+      </p>
+
+      <form method="POST" action="{% url 'inspiration' %}"  enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <input type="file"
+               name="image"
+               class="custom-file-input">
+
+        <textarea name="note"
+                  class="custom-textarea"
+                  placeholder="Describe your desired style..."></textarea>
+
+        <button type="submit" class="upload-btn">
+          Upload Inspiration
+        </button>
+
+      </form>
+
+    </div>
+
+
+    <!-- Inspiration Comparison -->
+    <div class="row gy-4">
+
+      <!-- User Inspiration -->
+      <div class="col-lg-6">
+
+        <div class="preview-card">
+
+          <div class="preview-header">
+            <h4>Your Inspiration</h4>
+          </div>
+
+          {% if inspiration %}
+
+            <img src="{{ inspiration.image.url }}"
+                 class="preview-image">
+
+          {% else %}
+
+            <div class="preview-empty">
+              No inspiration uploaded yet.
+            </div>
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+
+      <!-- Matched Work -->
+      <div class="col-lg-6">
+
+        <div class="preview-card">
+
+          <div class="preview-header">
+            <h4>Our Similar Work</h4>
+          </div>
+
+          {% if matched %}
+
+            <img src="{{ matched.image.url }}"
+                 class="preview-image">
+
+          {% else %}
+
+            <div class="preview-empty">
+              No matching portfolio found yet.
+            </div>
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>About</h2>
+        <p>Connecting clients to the best beauty and grooming professionals in one place.</p>
+      </div><!-- End Section Title -->
+
+      <div class="container">
+
+  <div class="row gy-4">
+
+    <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
+      <img src="{% static 'assets/img/me.jpeg' %}" class="image-container" alt="Beauty services platform">
+    </div>
+
+    <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+
+      <h3>Your Local Beauty & Grooming Hub</h3>
+
+      <p class="fst-italic">
+        From inspiration to appointment in a few clicks — discover, compare, and book the best salons, barbers, and beauty professionals near you.
+      </p>
+
+      <ul>
+        <li><i class="bi bi-check-circle"></i> <span>Explore verified salons, barbers, and beauty experts in one place.</span></li>
+        <li><i class="bi bi-check-circle"></i> <span>View real hairstyles and past work before booking your appointment.</span></li>
+        <li><i class="bi bi-check-circle"></i> <span>Compare services, prices, and reviews to find your perfect match.</span></li>
+        <li><i class="bi bi-check-circle"></i> <span>Book appointments quickly and conveniently through one platform.</span></li>
+      </ul>
+
+      <a href="#" class="read-more">
+        <span>Explore Services</span>
+        <i class="bi bi-arrow-right"></i>
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
+
+    </section><!-- /About Section -->
+
+   
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Contact</h2>
+        <p>Fill the form below in case of any feedback or complaints</p>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade" data-aos-delay="100">
+
+        <div class="row gy-4">
+
+          <div class="col-lg-4">
+            <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="200">
+              <i class="bi bi-geo-alt flex-shrink-0"></i>
+              <div>
+                <h3>Address</h3>
+                <p>Kisii,Kenya</p>
+              </div>
+            </div><!-- End Info Item -->
+
+            <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+              <i class="bi bi-telephone flex-shrink-0"></i>
+              <div>
+                <h3>Call Us</h3>
+                <p>+254 715 766 376</p>
+              </div>
+            </div><!-- End Info Item -->
+
+            <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+              <i class="bi bi-envelope flex-shrink-0"></i>
+              <div>
+                <h3>Email Us</h3>
+                <p>shannbahati@gmail.com</p>
+              </div>
+            </div><!-- End Info Item -->
+
+          </div>
+
+          <div class="col-lg-8">
+            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+              <div class="row gy-4">
+
+                <div class="col-md-6">
+                  <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+                </div>
+
+                <div class="col-md-6 ">
+                  <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
+                </div>
+
+                <div class="col-md-12">
+                  <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+                </div>
+
+                <div class="col-md-12">
+                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+                </div>
+
+                <div class="col-md-12 text-center">
+                  <div class="loading">Loading</div>
+                  <div class="error-message"></div>
+                  <div class="sent-message">Your message has been sent. Thank you!</div>
+
+                  <button type="submit">Send Message</button>
+                </div>
+
+              </div>
+            </form>
+          </div><!-- End Contact Form -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Contact Section -->
+
+  </main>
+
+  <footer id="footer" class="footer dark-background">
+
+    <div class="container">
+      <div class="row gy-3">
+        <div class="col-lg-3 col-md-6 d-flex">
+          <i class="bi bi-geo-alt icon"></i>
+          <div class="address">
+            <h4>Address</h4>
+            <p>Nyanchwa</p>
+            <p>Kisii, Kenya</p>
+            <p></p>
+          </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6 d-flex">
+          <i class="bi bi-telephone icon"></i>
+          <div>
+            <h4>Contact</h4>
+            <p>
+              <strong>Phone:</strong> <span>+254 715 766 376</span><br>
+              <strong>Email:</strong> <span>shannbahati@gmail.com</span><br>
+            </p>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 d-flex">
+          <i class="bi bi-clock icon"></i>
+          <div>
+            <h4>Opening Hours</h4>
+            <p>
+              <strong>Mon-Sat:</strong> <span>9AM - 5PM</span><br>
+              <strong>Sunday</strong>: <span>Closed</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <h4>Follow Us</h4>
+          <div class="social-links d-flex">
+            <a href="https://x.com/BahatiShann" class="twitter"><i class="bi bi-twitter-x"></i></a>
+            <a href="https://www.facebook.com/shann.bahati" class="facebook"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.linkedin.com/in/shann-bahati-5a5917326/" class="linkedin"><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">Shann</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+       
+        Designed by <a href="https://www.linkedin.com/in/shann-bahati-5a5917326/">Shann Norah</a> | <a href="https://github.com/Shann404">Web Developer</a>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/typed.js/typed.umd.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+</body>
+
+</html>
