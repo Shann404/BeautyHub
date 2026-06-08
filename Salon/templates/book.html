@@ -1,75 +1,396 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Book Appointment</title>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+
+            font-family:'Poppins', sans-serif;
+
+            background:#f5f5f5;
+
+            min-height:100vh;
+
+            display:flex;
+
+            justify-content:center;
+
+            align-items:center;
+
+            padding:30px;
+        }
+
+        .booking-container{
+
+            width:100%;
+
+            max-width:550px;
+
+            background:white;
+
+            border-radius:20px;
+
+            padding:40px;
+
+            box-shadow:0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .booking-title{
+
+            font-size:32px;
+
+            font-weight:600;
+
+            margin-bottom:10px;
+
+            color:#222;
+        }
+
+        .booking-subtitle{
+
+            color:#777;
+
+            margin-bottom:35px;
+        }
+
+        .form-group{
+
+            margin-bottom:25px;
+        }
+
+        label{
+
+            display:block;
+
+            margin-bottom:10px;
+
+            font-weight:500;
+
+            color:#333;
+        }
+
+        select,
+        input,
+        textarea{
+
+            width:100%;
+
+            padding:14px 16px;
+
+            border:1px solid #ddd;
+
+            border-radius:12px;
+
+            font-size:15px;
+
+            transition:0.3s;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus{
+
+            outline:none;
+
+            border-color:#000;
+
+            box-shadow:0 0 0 4px rgba(0,0,0,0.05);
+        }
+
+        textarea{
+
+            resize:none;
+
+            min-height:120px;
+        }
+
+        .book-btn{
+
+            width:100%;
+
+            padding:16px;
+
+            border:none;
+
+            border-radius:14px;
+
+            background:black;
+
+            color:white;
+
+            font-size:16px;
+
+            font-weight:600;
+
+            cursor:pointer;
+
+            transition:0.3s;
+        }
+
+        .book-btn:hover{
+
+            opacity:0.9;
+
+            transform:translateY(-2px);
+        }
+
+        .availability-info{
+
+            margin-top:10px;
+
+            font-size:14px;
+
+            color:#666;
+        }
+
+        .inspo-preview{
+
+            width:100%;
+
+            margin-top:15px;
+
+            border-radius:14px;
+
+            display:none;
+
+            object-fit:cover;
+
+            max-height:250px;
+        }
+
+        @media(max-width:600px){
+
+            .booking-container{
+
+                padding:25px;
+            }
+
+            .booking-title{
+
+                font-size:26px;
+            }
+
+        }
+
+    </style>
+
 </head>
+
 <body>
 
-<h2>Book Appointment</h2>
+<div class="booking-container">
 
-<form method="POST">
-
-    {% csrf_token %}
-
-    <label>Stylist</label>
-
-    <select name="stylist" id="stylist">
-
-        {% for stylist in stylists %}
-
-            <option value="{{ stylist.id }}">
-                {{ stylist.name }}
-            </option>
-
-        {% endfor %}
-
-    </select>
-
-    <br><br>
-
-    <label>Service</label>
-
-    <select name="service" id="service">
-
-        {% for booking in bookings %}
-
-            <option value="{{ booking.id }}">
-                {{ booking.name }}
-            </option>
-
-        {% endfor %}
-
-    </select>
-
-    <br><br>
-
-    <label>Date</label>
-
-    <input type="date" name="date" id="date">
-
-    <br><br>
-
-    <label>Available Slots</label>
-
-    <select name="time" id="time-slots">
-
-    <option value="">
-        Select Available Time
-    </option>
-
-</select>
-
-    <br><br>
-
-    <button type="submit">
+    <h1 class="booking-title">
         Book Appointment
-    </button>
+    </h1>
 
-</form>
+    <p class="booking-subtitle">
+        Schedule your salon session easily
+    </p>
+
+    <form method="POST" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <!-- Stylist -->
+
+        <div class="form-group">
+
+            <label>
+                Select Stylist
+            </label>
+
+            <select name="stylist" id="stylist">
+
+                <option value="">
+                    Choose Stylist
+                </option>
+
+                {% for stylist in stylists %}
+
+                    <option value="{{ stylist.id }}">
+                        {{ stylist.name }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <!-- Style -->
+
+        <div class="form-group">
+
+            <label>
+                Select Style
+            </label>
+
+            <select name="style" id="style">
+
+                <option value="">
+                    Choose Style
+                </option>
+
+                {% for style in styles %}
+
+                    <option value="{{ style.id }}">
+                        {{ style.name }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <!-- Phone Number -->
+
+    <div class="form-group">
+
+        <label>
+            Phone Number
+        </label>
+
+        <input
+            type="tel"
+            name="phone"
+            id="phone"
+            placeholder="e.g 0712345678"
+            required
+        >
+
+    </div>
+
+        <!-- Inspo Upload -->
+
+        <div class="form-group">
+
+            <label>
+                Upload Inspiration Photo
+            </label>
+
+            <input
+                type="file"
+                name="inspo"
+                id="inspo"
+                accept="image/*"
+            >
+
+            <img
+                id="inspo-preview"
+                class="inspo-preview"
+            >
+
+        </div>
+
+        <!-- Duration -->
+
+        <div class="form-group">
+
+            <label>
+                Duration
+            </label>
+
+            <input
+                type="text"
+                name="duration"
+                id="duration"
+                placeholder="e.g 2 Hours"
+                readonly
+            >
+
+        </div>
+
+        <!-- Price -->
+
+        <div class="form-group">
+
+            <label>
+                Price
+            </label>
+
+            <input
+                type="text"
+                name="price"
+                id="price"
+                placeholder="e.g Ksh 3000"
+                readonly
+            >
+
+        </div>
+
+        <!-- Date -->
+
+        <div class="form-group">
+
+            <label>
+                Appointment Date
+            </label>
+
+            <input
+                type="date"
+                name="date"
+                id="date"
+            >
+
+        </div>
+
+        <!-- Time Slots -->
+
+        <div class="form-group">
+
+            <label>
+                Available Time Slots
+            </label>
+
+            <select
+                name="time"
+                id="time-slots"
+            >
+
+                <option value="" >
+                    Select Available Time
+                </option>
+
+            </select>
+
+            <p class="availability-info">
+                Available slots update automatically
+            </p>
+
+        </div>
+
+        <button
+            type="submit"
+            class="book-btn"
+        >
+            Book Appointment
+        </button>
+
+    </form>
+
+</div>
 
 <script>
 
@@ -77,11 +398,11 @@ function loadSlots() {
 
     let stylist = $("#stylist").val()
 
-    let service = $("#service").val()
+    let style = $("#style").val()
 
     let date = $("#date").val()
 
-    if (stylist && service && date) {
+    if (stylist && style && date) {
 
         $.ajax({
 
@@ -89,23 +410,67 @@ function loadSlots() {
 
             data: {
                 stylist: stylist,
-                service: service,
+                style: style,
                 date: date
             },
 
             success: function(response) {
 
-                $("#time-slots").empty()
+                $("#time-slots").html(
+                    `<option value="">
+                        Select Available Time
+                    </option>`
+                )
 
-                response.slots.forEach(function(slot) {
+                if(response.slots.length === 0){
 
                     $("#time-slots").append(
-                        `<option value="${slot}">
-                            ${slot}
+                        `<option disabled>
+                            No Available Slots
                         </option>`
                     )
 
-                })
+                } else {
+
+                    response.slots.forEach(function(slot) {
+
+                        $("#time-slots").append(
+                            `<option value="${slot}">
+                                ${slot}
+                            </option>`
+                        )
+
+                    })
+
+                }
+
+            }
+
+        })
+
+    }
+
+}
+
+function loadStyleDetails(){
+
+    let style = $("#style").val()
+
+    if(style){
+
+        $.ajax({
+
+            url:"/get-style-details/",
+
+            data:{
+                style:style
+            },
+
+            success:function(response){
+
+                $("#duration").val(response.duration)
+
+                $("#price").val(response.price)
 
             }
 
@@ -117,9 +482,37 @@ function loadSlots() {
 
 $("#stylist").change(loadSlots)
 
-$("#service").change(loadSlots)
+$("#style").change(function(){
+
+    loadSlots()
+
+    loadStyleDetails()
+
+})
 
 $("#date").change(loadSlots)
+
+$("#inspo").change(function(e){
+
+    const file = e.target.files[0]
+
+    if(file){
+
+        let reader = new FileReader()
+
+        reader.onload = function(event){
+
+            $("#inspo-preview")
+                .attr("src", event.target.result)
+                .show()
+
+        }
+
+        reader.readAsDataURL(file)
+
+    }
+
+})
 
 </script>
 

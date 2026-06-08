@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Bookings</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+
+            font-family:'Poppins', sans-serif;
+
+            background:#f4f4f4;
+
+            padding:40px;
+        }
+
+        .table-container{
+
+            background:white;
+
+            border-radius:20px;
+
+            padding:30px;
+
+            overflow-x:auto;
+
+            box-shadow:0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .title{
+
+            font-size:30px;
+
+            font-weight:600;
+
+            margin-bottom:25px;
+
+            color:#222;
+        }
+
+        table{
+
+            width:100%;
+
+            border-collapse:collapse;
+        }
+
+        thead{
+
+            background:black;
+
+            color:white;
+        }
+
+        th{
+
+            padding:18px;
+
+            text-align:left;
+
+            font-size:14px;
+
+            font-weight:500;
+        }
+
+        td{
+
+            padding:18px;
+
+            border-bottom:1px solid #eee;
+
+            font-size:14px;
+
+            color:#444;
+        }
+
+        tbody tr{
+
+            transition:0.3s;
+        }
+
+        tbody tr:hover{
+
+            background:#f9f9f9;
+        }
+
+        .status{
+
+            padding:8px 14px;
+
+            border-radius:30px;
+
+            font-size:12px;
+
+            font-weight:600;
+
+            display:inline-block;
+        }
+
+        .pending{
+            background:#fff3cd;
+            color:#856404;
+        }
+
+        .confirmed{
+            background:#d4edda;
+            color:#155724;
+        }
+
+        .completed{
+            background:#d1ecf1;
+            color:#0c5460;
+        }
+
+        .cancelled{
+            background:#f8d7da;
+            color:#721c24;
+        }
+
+        .inspo-img{
+
+            width:70px;
+
+            height:70px;
+
+            object-fit:cover;
+
+            border-radius:12px;
+        }
+
+        @media(max-width:768px){
+
+            body{
+                padding:20px;
+            }
+
+            .title{
+                font-size:24px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="table-container">
+
+    <h1 class="title">
+        Appointment Bookings
+    </h1>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Customer</th>
+
+                <th>Phone</th>
+
+                <th>Stylist</th>
+
+                <th>Style</th>
+
+                <th>Date</th>
+
+                <th>Time</th>
+
+                <th>Price</th>
+
+                <th>Status</th>
+
+                <th>Inspo</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for booking in bookings %}
+
+            <tr>
+
+                <td>
+                    {{ booking.customer.username }}
+                </td>
+
+                <td>
+                    {{ booking.phone_number }}
+                </td>
+
+                <td>
+                    {{ booking.stylist.name }}
+                </td>
+
+                <td>
+                    {{ booking.style.name }}
+                </td>
+
+                <td>
+                    {{ booking.date }}
+                </td>
+
+                <td>
+                    {{ booking.start_time }}
+                </td>
+
+                <td>
+                    Ksh {{ booking.price }}
+                </td>
+
+                <td>
+
+                    <span class="status {{ booking.status }}">
+                        {{ booking.status }}
+                    </span>
+
+                </td>
+
+                <td>
+
+                    {% if booking.inspo %}
+
+                        <img
+                            src="{{ booking.inspo.url }}"
+                            class="inspo-img"
+                        >
+
+                    {% else %}
+
+                        No Image
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+
+                <td colspan="9">
+                    No bookings found
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>

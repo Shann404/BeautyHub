@@ -190,6 +190,7 @@
           <li><a href="#services">Services</a></li>
           <li><a href="#work">Our Work</a></li>
           <li><a href="{% url 'login' %}">Upload Work</a></li>
+          <li><a href="{% url 'booking_list' %}">Appointments</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -211,7 +212,7 @@
         <h2>Welcome to {{ salon.name }}</h2>
         <p>We offer services such as <span class="typed" data-typed-items="{{ salon.description }}"></span></p>
         <div>
-      <a href="{% url 'book_appointment' %}" class="cta-btn">Book Appointment</a>
+      <a href="{% url 'book_appointments' %}" class="cta-btn">Book Appointment</a>
           <a href="#work" class="cta-btn2">View Our Work</a>
         </div>
       </div>
@@ -266,7 +267,7 @@
 
         </ul>
 
-        <a href="#contact" class="read-more">
+        <a href="{% url 'book_appointment' %}" class="read-more">
                 <span>Book Now</span>
                 <i class="bi bi-arrow-right"></i>
                 </a>         

@@ -1,5 +1,5 @@
 from django.shortcuts import render,get_object_or_404,redirect
-from .models import Salon,Service,Portfolio,Inspiration,Profile,Stylist,Bookings,Appointment,Waitlist
+from .models import Salon,Portfolio,Inspiration,Profile,Booking,Style,Stylist,Appointment,Waitlist,Service
 from django.db.models import Q
 from .ai import find_similar_image
 from django.contrib.auth.decorators import login_required
@@ -50,14 +50,18 @@ def search(request):
 def salon_detail(request, slug):
 
     salon = get_object_or_404(Salon, slug=slug)
-    services = Service.objects.all()
-    portfolio = Portfolio.objects.filter(is_approved=True)
 
+    services = salon.services.all()
+    print(services)
 
-    return render(request, 'salon_detail.html', {
-        'salon': salon,
-        'services': services,
-       'portfolio': portfolio,
+    portfolio = salon.portfolio_items.filter(
+        is_approved=True
+    )
+
+    return render(request, "salon_detail.html", {
+        "salon": salon,
+        "services": services,
+        "portfolio": portfolio,
     })
 
 # def portfolio_view(request):
@@ -84,11 +88,17 @@ def upload_portfolio(request):
         category = request.POST['category']
         image = request.FILES['image']
 
-        Portfolio.objects.create(
-            title=title,
-            category=category,
-            image=image
-        )
+    salon = get_object_or_404(
+        Salon,
+        owner=request.user
+    )
+
+    Portfolio.objects.create(
+        salon=salon,
+        title=title,
+        category=category,
+        image=image
+    )
 
     
     return redirect('portfolio')
@@ -198,90 +208,160 @@ def register_view(request):
 
     return render(request, "register.html")
 
+@login_required
 def book_appointment(request):
 
-    stylists = Stylist.objects.all()
+    stylists = Stylist.objects.filter(
+        is_available=True
+    )
 
-    bookings = Bookings.objects.all()
+    styles = Style.objects.filter(
+        is_active=True
+    )
 
     if request.method == "POST":
 
         stylist_id = request.POST.get("stylist")
 
-        service_id = request.POST.get("service")
+        style_id = request.POST.get("style")
+
+        phone_number = request.POST.get("phone")
 
         date = request.POST.get("date")
 
-        time = request.POST.get("time")
+        start_time = request.POST.get("time")
 
-        stylist = get_object_or_404(
-            Stylist,
-            id=stylist_id
-        )
+        if not start_time:
+            return render(request, "book.html", {
+                "stylists": stylists,
+                "styles": styles,
+                "error": "Please select a time slot"
+            })
 
-        bookings = get_object_or_404(
-            Bookings,
-            id=service_id
-        )
+        inspo = request.FILES.get("inspo")
 
-        appointment_date = datetime.strptime(
-            date,
-            "%Y-%m-%d"
-        ).date()
+        if not stylist_id or not style_id:
 
-        start_time = datetime.strptime(
-            time,
-            "%H:%M"
-        ).time()
+            context = {
+                "stylists": stylists,
+                "styles": styles,
+                "error": "Please select both stylist and style"
+            }
 
-        start_datetime = datetime.combine(
-            appointment_date,
-            start_time
-        )
-
-        end_datetime = (
-            start_datetime +
-            bookings.duration +
-            bookings.buffer_time
-        )
-
-        overlap = Appointment.objects.filter(
-            stylist=stylist,
-            date=appointment_date,
-            start_time__lt=end_datetime.time(),
-            end_time__gt=start_time,
-            status__in=['pending', 'confirmed']
-        ).exists()
-
-        if overlap:
-
-            messages.error(
+            return render(
                 request,
-                "Time slot unavailable"
+                "book.html",
+                context
             )
 
-            return redirect('book_appointment')
+        stylist = Stylist.objects.get(
+            id=int(stylist_id)
+        )
 
-        Appointment.objects.create(
-            client=request.user,
+        style = Style.objects.get(
+            id=int(style_id)
+        )
+
+            # -----------------------------
+            # Convert selected start time
+            # -----------------------------
+
+        start_datetime = datetime.strptime(
+            start_time,
+            "%I:%M %p"
+        )
+
+        duration = style.duration
+
+        end_datetime = (
+            start_datetime + duration
+        )
+
+        # -----------------------------
+        # Create booking
+        # -----------------------------
+
+        existing_booking = Booking.objects.filter(
+
+    stylist=stylist,
+
+    date=date,
+
+    start_time=start_datetime.time(),
+
+        ).exclude(
+            status="cancelled"
+        ).exists()
+
+        if existing_booking:
+
+            context = {
+                "stylists": stylists,
+                "styles": styles,
+                "error": "This time slot is already booked."
+            }
+
+            return render(
+                request,
+                "book.html",
+                context
+            )
+
+        Booking.objects.create(
+
+            customer=request.user,
+
             stylist=stylist,
-            bookings=bookings,
-            date=appointment_date,
-            start_time=start_time,
+
+            style=style,
+
+            inspo=inspo,
+
+            phone_number=phone_number,
+
+            date=date,
+
+            start_time=start_datetime.time(),
+
             end_time=end_datetime.time(),
-            status='confirmed'
+
+            duration=duration,
+
+            price=style.price
         )
 
-        messages.success(
-            request,
-            "Appointment booked successfully"
-        )
+        return redirect("success_page")
 
-        return redirect('book_appointment')
+    context = {
 
-    return render(request, "book.html", {
         "stylists": stylists,
-        "bookings": bookings
+
+        "styles": styles
+    }
+
+    return render(
+        request,
+        "book.html",
+        context
+    )
+
+def get_style_details(request):
+
+    style_id = request.GET.get("style")
+
+    style = Style.objects.get(
+        id=style_id
+    )
+
+    duration_hours = (
+        style.duration.total_seconds() / 3600
+    )
+
+    return JsonResponse({
+
+        "price": str(style.price),
+
+        "duration": f"{duration_hours:.0f} Hours"
     })
 
 def notify_waitlist(service, date):
@@ -301,33 +381,123 @@ def get_slots(request):
 
     stylist_id = request.GET.get("stylist")
 
-    service_id = request.GET.get("service")
+    style_id = request.GET.get("style")
 
-    date = request.GET.get("date")
+    selected_date = request.GET.get("date")
 
-    stylist = Stylist.objects.get(id=stylist_id)
-
-    service = Service.objects.get(id=service_id)
-
-    booking_date = datetime.strptime(
-        date,
-        "%Y-%m-%d"
-    ).date()
-
-    slots = generate_available_slots(
-        stylist,
-        service,
-        booking_date
+    stylist = Stylist.objects.get(
+        id=stylist_id
     )
 
-    formatted_slots = []
+    style = Style.objects.get(
+        id=style_id
+    )
 
-    for slot in slots:
+    duration = style.duration
 
-        formatted_slots.append(
-            slot['start'].strftime("%H:%M")
+    # -----------------------------------
+    # Stylist working hours
+    # -----------------------------------
+
+    work_start = datetime.combine(
+        datetime.today(),
+        stylist.work_start
+    )
+
+    work_end = datetime.combine(
+        datetime.today(),
+        stylist.work_end
+    )
+
+    # -----------------------------------
+    # Existing bookings
+    # -----------------------------------
+
+    existing_bookings = Booking.objects.filter(
+        stylist=stylist,
+        date=selected_date
+    )
+
+    slots = []
+
+    current_slot = work_start
+
+    while current_slot + duration <= work_end:
+
+        proposed_start = current_slot
+
+        proposed_end = (
+            current_slot + duration
+        )
+
+        overlap = False
+
+        # -----------------------------------
+        # Prevent overlaps
+        # -----------------------------------
+
+        for booking in existing_bookings:
+
+            existing_start = datetime.combine(
+                datetime.today(),
+                booking.start_time
+            )
+
+            existing_end = datetime.combine(
+                datetime.today(),
+                booking.end_time
+            )
+
+            if (
+                proposed_start < existing_end
+                and
+                proposed_end > existing_start
+            ):
+
+                overlap = True
+
+                break
+
+        if not overlap:
+
+            slots.append(
+                current_slot.strftime(
+                    "%I:%M %p"
+                )
+            )
+
+        # -----------------------------------
+        # Move to next slot
+        # -----------------------------------
+
+        current_slot += timedelta(
+            minutes=30
         )
 
     return JsonResponse({
-        "slots": formatted_slots
+
+        "slots": slots
     })
+
+def success_page(request):
+    return render(request, "success.html")
+
+@login_required
+def booking_list(request):
+
+    bookings = Booking.objects.select_related(
+        "customer",
+        "stylist",
+        "style"
+    ).order_by("-created_at")
+
+    context = {
+        "bookings": bookings
+    }
+
+    return render(
+        request,
+        "booking_list.html",
+        context
+    )
+    

@@ -15,6 +15,7 @@ class Salon(models.Model):
         ('makeup', 'Makeup Artist'),
     )
 
+
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
 
@@ -65,20 +66,48 @@ class Salon(models.Model):
         return self.name
     
 class Service(models.Model):
+
+    salon = models.ForeignKey(
+        Salon,
+        on_delete=models.CASCADE,
+        related_name="services",
+        blank=True,
+        null=True
+    )
+
     service_title = models.CharField(max_length=100)
+
     service_subtitle = models.CharField(max_length=100)
+
     service_description = models.TextField()
-    service_icon = models.CharField(max_length=100, default="bi bi-star")
-    
+
+    service_icon = models.CharField(
+        max_length=100,
+        default="bi bi-star"
+    )
+
     def __str__(self):
         return self.service_title
     
 
 class Portfolio(models.Model):
+
+    salon = models.ForeignKey(
+        Salon,
+        on_delete=models.CASCADE,
+        related_name="portfolio_items",
+        null=True,
+        blank=True
+    )
+
     title = models.CharField(max_length=100)
+
     image = models.ImageField(upload_to='portfolio/')
-    category = models.CharField(max_length=100)  # braids, nails, makeup
+
+    category = models.CharField(max_length=100)
+
     created_at = models.DateTimeField(auto_now_add=True)
+
     is_approved = models.BooleanField(default=False)
 
     def __str__(self):
@@ -123,24 +152,43 @@ class Profile(models.Model):
 
 class Stylist(models.Model):
 
-    name = models.CharField(max_length=100)
 
-    photo = models.ImageField(upload_to='stylists/')
+    name = models.CharField(max_length=200)
 
-    bio = models.TextField(blank=True)
+    phone = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    profile_image = models.ImageField(
+        upload_to="stylists/",
+        blank=True,
+        null=True
+    )
+
+    is_available = models.BooleanField(default=True)
+
+    work_start = models.TimeField(default="09:00")
+
+    work_end = models.TimeField(default="18:00")
 
     def __str__(self):
         return self.name
+    
+class Style(models.Model):
 
+    stylist = models.ForeignKey(
+        Stylist,
+        on_delete=models.CASCADE,
+        related_name="styles"
+    )
 
-class Bookings(models.Model):
+    name = models.CharField(
+        max_length=200
+    )
 
-    name = models.CharField(max_length=100)
-
-    duration = models.DurationField()
-
-    buffer_time = models.DurationField(
-        default=timedelta(minutes=15)
+    description = models.TextField(
+        blank=True
     )
 
     price = models.DecimalField(
@@ -148,8 +196,102 @@ class Bookings(models.Model):
         decimal_places=2
     )
 
+    duration = models.DurationField(
+        default=timedelta(hours=1)
+    )
+
+    style_image = models.ImageField(
+        upload_to="styles/",
+        blank=True,
+        null=True
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
     def __str__(self):
-        return self.name
+
+        return f"{self.name} - {self.stylist.name}"
+  
+
+
+class Booking(models.Model):
+
+    STATUS_CHOICES = (
+        ("pending", "Pending"),
+        ("confirmed", "Confirmed"),
+        ("completed", "Completed"),
+        ("cancelled", "Cancelled"),
+    )
+
+    customer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="bookings"
+    )
+
+    stylist = models.ForeignKey(
+        Stylist,
+        on_delete=models.CASCADE,
+        related_name="bookings"
+    )
+
+    style = models.ForeignKey(
+        Style,
+        on_delete=models.CASCADE,
+        related_name="bookings"
+    )
+
+
+    inspo = models.ImageField(
+        upload_to="inspo/",
+        blank=True,
+        null=True
+    )
+
+    date = models.DateField()
+
+    start_time = models.TimeField()
+
+    end_time = models.TimeField()
+
+    duration = models.DurationField()
+
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    phone_number = models.CharField(
+    max_length=15
+)
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending"
+    )
+
+    notes = models.TextField(
+        blank=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def __str__(self):
+
+        return (
+            f"{self.customer.username} - "
+            f"{self.style.name} - "
+            f"{self.date}"
+        )
 
 
 class WorkingHours(models.Model):
